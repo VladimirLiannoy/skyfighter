@@ -80,13 +80,21 @@ var routes = [
 
 
 function SkyFighter(name, parentContainer, route, traps) {
-    this.rocket = PIXI.Sprite.fromImage('img/rocket.png');
-    this.rocket.anchor.set(0.5);
-    this.rocket.scale.set(0.5);
+    var container = new PIXI.Container(),
+    title = new PIXI.Text(name, {fontSize: "20px", fill: 0xFFFFFF});
 
-    parentContainer.addChild(this.rocket);
+    var rocket = PIXI.Sprite.fromImage('img/rocket.png');
+    rocket.anchor.set(0.5);
+    rocket.scale.set(0.5);
 
-    this.rocket.position.set(route[0].x, route[0].y);
+    parentContainer.addChild(container);
+    container.addChild(rocket);
+    container.addChild(title);
+
+    title.position.set(0, 50);
+    title.anchor.set(0.5);
+
+    container.position.set(route[0].x, route[0].y);
 
     this.nextPositionIndex = 1;
     this.nextPosition = route[this.nextPositionIndex];
@@ -104,15 +112,15 @@ function SkyFighter(name, parentContainer, route, traps) {
 
         if (me.flying) {
 
-            me.direction = calcDirection(me.rocket, me.nextPosition);
+            me.direction = calcDirection(container, me.nextPosition);
 
-            me.rocket.rotation = me.direction + PIXI.DEG_TO_RAD * 90;
+            rocket.rotation = me.direction + PIXI.DEG_TO_RAD * 90;
 
             me.isInGravitationTrap = false;
             me.gravitationTrapCount = 0;
 
             traps.forEach(function (trap) {
-                if (calcDistance(me.rocket, trap) < trap.size) {
+                if (calcDistance(container, trap) < trap.size) {
                     me.isInGravitationTrap = true;
                     me.gravitationTrapCount++;
                 }
@@ -121,7 +129,7 @@ function SkyFighter(name, parentContainer, route, traps) {
 
             me.makeStep();
 
-            if (calcDistance(me.rocket, me.nextPosition) < 1) {
+            if (calcDistance(container, me.nextPosition) < 1) {
                 me.nextPositionIndex++;
 
                 if (me.nextPositionIndex === route.length) {
@@ -137,14 +145,13 @@ function SkyFighter(name, parentContainer, route, traps) {
 
     this.makeStep = function () {
         var me = this,
-            rocket = me.rocket,
             speed = me.isInGravitationTrap ? me.speed / (me.gravitationTrapCount + 1) : me.speed,
             newX, newY;
 
-        newX = rocket.x + Math.cos(me.direction) * speed;
-        newY = rocket.y + Math.sin(me.direction) * speed;
+        newX = container.x + Math.cos(me.direction) * speed;
+        newY = container.y + Math.sin(me.direction) * speed;
 
-        rocket.position.set(newX, newY);
+        container.position.set(newX, newY);
     };
 }
 
