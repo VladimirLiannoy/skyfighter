@@ -6,10 +6,12 @@ app.stage.addChild(PIXI.Sprite.fromImage('img/background.png'));
 var blackHolesCont = new PIXI.Container();
 var rocketsCont = new PIXI.Container();
 var cloudsCont = new PIXI.Container();
+var meteoritsCont = new PIXI.Container();
 
 app.stage.addChild(blackHolesCont);
 app.stage.addChild(rocketsCont);
 app.stage.addChild(cloudsCont);
+app.stage.addChild(meteoritsCont);
 
 var points = [];
 
@@ -78,10 +80,46 @@ var routes = [
 
 //createGrid(app.stage);
 
+setInterval(function () {
+    createMeteorite(meteoritsCont);
+}, 1000);
+
+function createMeteorite(parentContainer) {
+    var meteorite = PIXI.Sprite.fromImage('img/meteorite.png'),
+        size = parseInt(Math.random() * 10 + 10),
+        x = 1920 + parseInt(Math.random() * 1920),
+        y = -parseInt(Math.random() * 1200),
+        direction = PIXI.DEG_TO_RAD * 135,
+        speed = Math.random() * 2 + 2;
+
+    meteorite.position.set(x, y);
+    meteorite.anchor.set(0.5);
+
+    var update = function () {
+        var newX, newY;
+
+        newX = meteorite.x + Math.cos(direction) * speed;
+        newY = meteorite.y + Math.sin(direction) * speed;
+
+        meteorite.position.set(newX, newY);
+
+        if(newY>1300){
+            app.ticker.remove(update);
+            meteorite.destroy();
+        }
+    };
+
+    app.ticker.add(update);
+
+    meteorite.height = size * 2;
+    meteorite.width = size * 2;
+
+    parentContainer.addChild(meteorite);
+}
 
 function SkyFighter(name, parentContainer, route, traps) {
     var container = new PIXI.Container(),
-    title = new PIXI.Text(name, {fontSize: "20px", fill: 0xFFFFFF});
+        title = new PIXI.Text(name, {fontSize: "20px", fill: 0xFFFFFF});
 
     var rocket = PIXI.Sprite.fromImage('img/rocket.png');
     rocket.anchor.set(0.5);
@@ -175,8 +213,8 @@ function drawGraviTrap(x, y, size, parentContainer) {
         blackhole.rotation += 0.01;
     });
 
-    blackhole.height = size*2;
-    blackhole.width = size*2;
+    blackhole.height = size * 2;
+    blackhole.width = size * 2;
 
 
     /* var gr = new PIXI.Graphics();
