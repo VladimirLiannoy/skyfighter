@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../node_modules/pixi.js/dist/pixi.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body{
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+
+
+<div id="controls">
+   <input type="button" value="Add Hole" id="addHole"/>
+   <input type="button" value="Add Path Point" id="addPathPoint"/>
+   <input type="button" value="Remove Last Path Point" id="removeLastPathPoint"/>
+</div>
+
+
+<div id="game"></div>
+
+<script src="editor.js"></script>
+</body>
+</html>
