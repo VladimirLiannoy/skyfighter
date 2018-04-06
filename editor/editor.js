@@ -2,10 +2,11 @@ var app = new PIXI.Application(1920, 1200);
 document.getElementById("game").appendChild(app.view);
 
 app.stage.addChild(PIXI.Sprite.fromImage('../img/background.jpg'));
-var pathsImage = PIXI.Sprite.fromImage('../img/Paths.png');
-pathsImage.position.set(0, 0);
-app.stage.addChild(pathsImage);
 
+var editorAmbient = new Audio('../sounds/editor-ambient.mp3');
+
+editorAmbient.loop = true;
+editorAmbient.play();
 
 
 var PATH_MAX_LENGTH = 2400;

@@ -7,11 +7,18 @@ var blackHolesCont = new PIXI.Container();
 var rocketsCont = new PIXI.Container();
 var cloudsCont = new PIXI.Container();
 var meteoritsCont = new PIXI.Container();
+var explosionSound = new Audio('sounds/explosion.mp3');
+var explosionSoundClone = explosionSound.cloneNode();
+var ambient = new Audio('sounds/game-ambient.mp3');
 
 app.stage.addChild(blackHolesCont);
 app.stage.addChild(rocketsCont);
 app.stage.addChild(cloudsCont);
 app.stage.addChild(meteoritsCont);
+
+ambient.loop = true;
+ambient.volume = 0.2;
+ambient.play();
 
 var points = [];
 
@@ -145,7 +152,7 @@ function SkyFighter(name, parentContainer, route, traps) {
 
     var rocket = PIXI.Sprite.fromImage('img/rocket.png');
     rocket.anchor.set(0.5);
-    rocket.scale.set(0.5);
+    rocket.scale.set(0.3);
 
     parentContainer.addChild(container);
     container.addChild(rocket);
@@ -167,6 +174,7 @@ function SkyFighter(name, parentContainer, route, traps) {
 
     this.flying = true;
     this.shouldMove = true;
+    this.shouldPlaySound = true;
 
     this.update = function () {
         var me = this;
@@ -214,9 +222,16 @@ function SkyFighter(name, parentContainer, route, traps) {
         newY = container.y + Math.sin(me.direction) * speed;
 
         if (checkCollision(rocket, newX, newY)) {
+
             me.shouldMove = false;
+            if(me.shouldPlaySound){
+                explosionSoundClone.play();
+                me.shouldPlaySound = false;
+            }
+
             setTimeout(function () {
                 me.shouldMove = true;
+                me.shouldPlaySound = true;
             }, 1000);
         }
 
