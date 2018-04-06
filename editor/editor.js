@@ -242,7 +242,8 @@ function reInitPath() {
 }
 
 
-document.getElementById("addTrap").addEventListener("click", function () {
+
+function addTrap(){
 
     if(generatedTraps.length >= TRAPS_MAX_COUNT){
         alert("Max 4 traps might be placed.");
@@ -254,16 +255,15 @@ document.getElementById("addTrap").addEventListener("click", function () {
 
     tempTrap = createTrapSprite(1.0);
     app.stage.addChild(tempTrap);
-});
+}
 
-document.getElementById("removeTrap").addEventListener("click", function () {
+function removeTrap(){
     generatedTraps.pop();
 
     reInitTraps();
-});
+}
 
-
-document.getElementById("addPathPoint").addEventListener("click", function () {
+function addPathPoint(){
     inputMode = IM_ADD_PATH_POINT;
 
 
@@ -275,15 +275,50 @@ document.getElementById("addPathPoint").addEventListener("click", function () {
     }
 
     app.stage.addChild(newPointContainer);
-});
+}
 
-document.getElementById("removePathPoint").addEventListener("click", function () {
+
+function removePathPoint(){
     generatedPath.pop();
     app.stage.removeChild(newPointContainer);
     app.stage.removeChild(pathLeftSprite);
     reInitPath();
     inputMode = IM_NONE;
+}
+
+
+document.getElementById("addTrap").addEventListener("click", addTrap);
+document.getElementById("removeTrap").addEventListener("click", removeTrap);
+document.getElementById("addPathPoint").addEventListener("click", addPathPoint);
+document.getElementById("removePathPoint").addEventListener("click", removePathPoint);
+
+
+
+
+window.addEventListener("keydown", function (e) {
+    var code = e.keyCode;
+    console.error("eeee", code)
+
+    switch (code){
+        case 65: {
+            addPathPoint();
+        }break;
+
+        case 83: {
+            removePathPoint();
+        }break;
+
+        case 90: {
+            addTrap();
+        }break;
+
+        case 88: {
+            removeTrap();
+        }break;
+
+    }
 });
+
 
 
 document.getElementById("export").addEventListener("click", function () {
@@ -338,9 +373,6 @@ app.view.addEventListener("mousemove", function (e) {
 });
 
 
-app.view.addEventListener("keydown", function () {
-
-});
 
 app.view.addEventListener("mousedown", function (e) {
     var mX = e.offsetX,
