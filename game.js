@@ -215,7 +215,6 @@ this.makeStep = function () {
         container.position.set(newX, newY);
     }
 };
-}
 
 function checkCollision(rocket, x, y) {
     var isCollision = false,
