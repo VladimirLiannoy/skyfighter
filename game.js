@@ -80,9 +80,9 @@ var routes = [
 
 
 var finishArea = {
-    x: 1820,
-    y: 1100,
-    radius: 200
+    x: 1850,
+    y: 1140,
+    radius: 180
 };
 
 var meteorits = [];

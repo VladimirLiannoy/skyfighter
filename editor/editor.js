@@ -25,15 +25,15 @@ function addCircleSprite(conf, parent) {
 
 
 var startArea = {
-    x: 100,
-    y: 100,
+    x: 50,
+    y: 40,
     radius: 200
 };
 
 var finishArea = {
-    x: 1820,
-    y: 1100,
-    radius: 200
+    x: 1850,
+    y: 1140,
+    radius: 180
 };
 
 
