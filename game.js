@@ -307,4 +307,34 @@ var profile = {
     }, {"x": 1675, "y": 603, size: 250}]
 };
 
+function createCloud(i) {
+    var cloud = PIXI.Sprite.fromImage('img/fog' + (i % 8) + '.png'),
+        scale = Math.random() * (4 - 1) + 1,
+        speed = Math.random() * (0.3 - 0.05) + 0.05;
+
+    cloud.scale.set(scale);
+    cloud.position.set(
+        Math.random() * (1980 - cloud.width) + cloud.width,
+        Math.random() * (1200 - cloud.height) + cloud.height
+    );
+
+    app.ticker.add(function () {
+        if( cloud.position.x >= 1200 ){
+            cloud.position.set(
+                -(cloud.width),
+                Math.random() * 1200
+            );
+        }
+
+        cloud.position.x += speed;
+    });
+
+    cloudsCont.addChild(cloud);
+}
+
+for(var i = 0; i < 20; i++){
+    createCloud(i);
+}
+
+
 console.log(JSON.stringify(profile));
