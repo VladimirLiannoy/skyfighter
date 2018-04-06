@@ -80,17 +80,24 @@ var routes = [
 
 //createGrid(app.stage);
 
-setInterval(function () {
-    createMeteorite(meteoritsCont);
-}, 1000);
+// setInterval(function () {
+//     createMeteorite(meteoritsCont);
+// }, 600);
+
+
+app.ticker.add(function () {
+    if(Math.random() < 0.10){
+        createMeteorite(meteoritsCont);
+    }
+});
 
 function createMeteorite(parentContainer) {
     var meteorite = PIXI.Sprite.fromImage('img/meteorite.png'),
-        size = parseInt(Math.random() * 10 + 10),
-        x = 1920 + parseInt(Math.random() * 1920),
+        size = parseInt(Math.random() * 10 + 20),
+        x = 1000 + parseInt(Math.random() * 1920),
         y = -parseInt(Math.random() * 1200),
         direction = PIXI.DEG_TO_RAD * 135,
-        speed = Math.random() * 2 + 2;
+        speed = Math.random() * 6 + 6;
 
     meteorite.position.set(x, y);
     meteorite.anchor.set(0.5);

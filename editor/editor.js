@@ -147,7 +147,7 @@ addCircleSprite(startArea, app.stage);
 addCircleSprite(finishArea, app.stage);
 
 
-function createTrapSprite(scale) {
+function createTrapSprite(size) {
     var blackhole = PIXI.Sprite.fromImage('../img/blackhole-icon.png');
 
     blackhole.position.set(0, 0);
@@ -159,13 +159,14 @@ function createTrapSprite(scale) {
         blackhole.rotation += 0.01;
     });
 
-    blackhole.scale.set(scale);
+
+    // blackhole.scale.set(size/blackhole.width);
 
     return blackhole;
 }
 
-function initTrapSprite(x, y, scale, parent) {
-    var blackhole = createTrapSprite(scale);
+function initTrapSprite(x, y, size, parent) {
+    var blackhole = createTrapSprite(size);
 
     blackhole.position.set(x, y);
 
@@ -184,7 +185,7 @@ function reInitTraps() {
     for (var i = 0; i < generatedTraps.length; i++) {
         var trapConfig = generatedTraps[i];
 
-        initTrapSprite(trapConfig.x, trapConfig.y, trapConfig.scale, trapsContainer);
+        initTrapSprite(trapConfig.x, trapConfig.y, trapConfig.size, trapsContainer);
     }
 
 
@@ -345,7 +346,7 @@ app.view.addEventListener("mousedown", function (e) {
             generatedTraps.push({
                 x: mX,
                 y: mY,
-                scale: tempTrap.scale.x //assume x and y scales are equal
+                size: 150//assume x and y scales are equal
             });
 
             app.stage.removeChild(tempTrap);
