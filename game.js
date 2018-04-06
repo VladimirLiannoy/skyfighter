@@ -87,7 +87,6 @@ var finishArea = {
 
 var meteorits = [];
 
-
 app.ticker.add(function () {
     if (Math.random() < 0.10) {
         createMeteorite(meteoritsCont);
@@ -158,6 +157,7 @@ function SkyFighter(name, parentContainer, route, traps) {
 
 
     this.flying = true;
+    this.shouldMove = true;
 
     this.update = function () {
         var me = this;
@@ -193,28 +193,29 @@ function SkyFighter(name, parentContainer, route, traps) {
             me.nextPositionIndex++;
             me.nextPosition = route[me.nextPositionIndex];
         }
-    }
+    };
 
+
+    this.makeStep = function () {
+        var me = this,
+            speed = me.isInGravitationTrap ? me.speed / (me.gravitationTrapCount + 1) : me.speed,
+            newX, newY;
+
+        newX = container.x + Math.cos(me.direction) * speed;
+        newY = container.y + Math.sin(me.direction) * speed;
+
+        if (checkCollision(rocket, newX, newY)) {
+            me.shouldMove = false;
+            setTimeout(function () {
+                me.shouldMove = true;
+            }, 2000);
+        }
+
+        if (me.shouldMove) {
+            container.position.set(newX, newY);
+        }
+    };
 }
-
-this.makeStep = function () {
-    var me = this,
-        speed = me.isInGravitationTrap ? me.speed / (me.gravitationTrapCount + 1) : me.speed,
-        newX, newY;
-
-    newX = container.x + Math.cos(me.direction) * speed;
-    newY = container.y + Math.sin(me.direction) * speed;
-
-    var isCollision = checkCollision(rocket, newX, newY);
-
-    if (isCollision) {
-        setTimeout(function () {
-            container.position.set(container.x, container.y);
-        }, 2000);
-    } else {
-        container.position.set(newX, newY);
-    }
-};
 
 function checkCollision(rocket, x, y) {
     var isCollision = false,
