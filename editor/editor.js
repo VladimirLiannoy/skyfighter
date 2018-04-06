@@ -8,7 +8,8 @@ app.stage.addChild(pathsImage);
 
 
 
-var PATH_MAX_LENGTH = 2000;
+var PATH_MAX_LENGTH = 2400;
+var TRAPS_MAX_COUNT = 4;
 
 
 function addCircleSprite(conf, parent) {
@@ -240,10 +241,16 @@ function reInitPath() {
 
 
 document.getElementById("addTrap").addEventListener("click", function () {
+
+    if(generatedTraps.length >= TRAPS_MAX_COUNT){
+        alert("Max 4 traps might be placed.");
+        return;
+    }
+
     inputMode = IM_ADD_TRAP;
 
 
-    tempTrap = createTrapSprite(0.5);
+    tempTrap = createTrapSprite(1.0);
     app.stage.addChild(tempTrap);
 });
 
@@ -270,8 +277,10 @@ document.getElementById("addPathPoint").addEventListener("click", function () {
 
 document.getElementById("removePathPoint").addEventListener("click", function () {
     generatedPath.pop();
-
+    app.stage.removeChild(newPointContainer);
+    app.stage.removeChild(pathLeftSprite);
     reInitPath();
+    inputMode = IM_NONE;
 });
 
 
