@@ -78,6 +78,14 @@ var routes = [
 
 ];
 
+
+
+var finishArea = {
+    x: 1820,
+    y: 1100,
+    radius: 200
+};
+
 //createGrid(app.stage);
 
 // setInterval(function () {
@@ -174,15 +182,16 @@ function SkyFighter(name, parentContainer, route, traps) {
 
             me.makeStep();
 
+
+            if(calcDistance(container, finishArea) < finishArea.radius){
+                me.flying = false;
+                console.error("Winner", name, "!!!!!");
+            }
+
             if (calcDistance(container, me.nextPosition) < 1) {
                 me.nextPositionIndex++;
 
-                if (me.nextPositionIndex === route.length) {
-                    me.flying = false;
-                    console.error("Winner", name, "!!!!!");
-                } else {
-                    me.nextPosition = route[me.nextPositionIndex];
-                }
+                me.nextPosition = route[me.nextPositionIndex];
 
             }
         }

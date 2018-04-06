@@ -337,6 +337,10 @@ app.view.addEventListener("mousemove", function (e) {
 });
 
 
+app.view.addEventListener("keydown", function () {
+
+});
+
 app.view.addEventListener("mousedown", function (e) {
     var mX = e.offsetX,
         mY = e.offsetY;
