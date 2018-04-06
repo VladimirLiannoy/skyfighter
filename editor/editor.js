@@ -103,7 +103,7 @@ var finishArea = {
 };
 
 
-var generatedPath = [{"x": 107, "y": 79}, {"x": 218, "y": 135}, {"x": 305, "y": 192}];
+var generatedPath = [];
 var generatedTraps = [];
 
 
