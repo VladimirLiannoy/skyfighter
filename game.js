@@ -15,6 +15,9 @@ app.stage.addChild(meteoritsCont);
 
 var points = [];
 
+var PATH_MAX_LENGTH = 2400;
+var TRAPS_MAX_COUNT = 4;
+
 var graviTraps = [{"x": 500, "y": 500, size: 250}];
 
 var routes = [
@@ -79,6 +82,12 @@ var routes = [
 ];
 
 
+var startArea = {
+    x: 50,
+    y: 40,
+    radius: 200
+};
+
 var finishArea = {
     x: 1850,
     y: 1140,
@@ -88,18 +97,18 @@ var finishArea = {
 var meteorits = [];
 
 app.ticker.add(function () {
-    if (Math.random() < 0.10) {
+    if (Math.random() < 0.03) {
         createMeteorite(meteoritsCont);
     }
 });
 
 function createMeteorite(parentContainer) {
     var meteorite = PIXI.Sprite.fromImage('img/meteorite.png'),
-        size = parseInt(Math.random() * 10 + 20),
-        x = 1000 + parseInt(Math.random() * 1920),
-        y = -parseInt(Math.random() * 1200),
+        size = parseInt(Math.random() * 50 + 10),
+        x = 400 + parseInt(Math.random() * 1920),
+        y = -parseInt(Math.random() * 200),
         direction = PIXI.DEG_TO_RAD * 135,
-        speed = Math.random() * 6 + 6;
+        speed = Math.random() * 5 * (1-size/60) + 3;
 
     meteorite.position.set(x, y);
     meteorite.anchor.set(0.5);
@@ -150,7 +159,7 @@ function SkyFighter(name, parentContainer, route, traps) {
     this.nextPositionIndex = 1;
     this.nextPosition = route[this.nextPositionIndex];
 
-    this.speed = 1;
+    this.speed = 2;
     this.direction = 0;
     this.isInGravitationTrap = false;
     this.gravitationTrapCount = 0;
@@ -189,7 +198,7 @@ function SkyFighter(name, parentContainer, route, traps) {
             console.error("Winner", name, "!!!!!");
         }
 
-        if (calcDistance(container, me.nextPosition) < 1) {
+        if (calcDistance(container, me.nextPosition) < me.speed) {
             me.nextPositionIndex++;
             me.nextPosition = route[me.nextPositionIndex];
         }
@@ -208,14 +217,17 @@ function SkyFighter(name, parentContainer, route, traps) {
             me.shouldMove = false;
             setTimeout(function () {
                 me.shouldMove = true;
-            }, 2000);
+            }, 1000);
         }
 
         if (me.shouldMove) {
             container.position.set(newX, newY);
         }
+
+        return speed;
     };
 }
+
 
 function checkCollision(rocket, x, y) {
     var isCollision = false,
@@ -358,10 +370,54 @@ document.getElementById("startGame").addEventListener("click", function () {
 
 
     PROFILES.forEach(function (profile) {
+        if(!profile.traps || !(profile.traps instanceof Array) || profile.traps.length > TRAPS_MAX_COUNT){
+            console.error("CHEAT ATTEMPT", profile.name);
+            return;
+        }
         graviTraps = graviTraps.concat(profile.traps);
     });
 
+
+    function getLineLength(p1, p2) {
+        return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+    }
+
+
+    function getPathLength(path) {
+        var i,
+            resLength = 0,
+            prevPoint,
+            currPoint;
+
+        if (path.length < 2) {
+            return 0;
+        }
+
+
+        prevPoint = path[0];
+        for (i = 1; i < path.length; i++) {
+            currPoint = path[i];
+
+            resLength += getLineLength(prevPoint, currPoint);
+
+            prevPoint = currPoint;
+        }
+
+
+        return resLength;
+    }
+
+    function isValidPath(path){
+        return getPathLength(path) < PATH_MAX_LENGTH && (calcDistance(startArea, path[0]) < startArea.radius)
+    }
+
+
     PROFILES.forEach(function (profile) {
+        if(!isValidPath(profile.path)){
+            console.error("CHEAT ATTEMPT", profile.name);
+            return;
+        }
+
         rockets.push(new SkyFighter(profile.name, rocketsCont, profile.path, graviTraps));
     });
 
