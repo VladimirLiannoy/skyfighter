@@ -7,8 +7,8 @@ var blackHolesCont = new PIXI.Container();
 var rocketsCont = new PIXI.Container();
 var cloudsCont = new PIXI.Container();
 var meteoritsCont = new PIXI.Container();
+
 var explosionSound = new Audio('sounds/explosion.mp3');
-var explosionSoundClone = explosionSound.cloneNode();
 var ambient = new Audio('sounds/game-ambient.mp3');
 
 app.stage.addChild(blackHolesCont);
@@ -20,12 +20,14 @@ ambient.loop = true;
 ambient.volume = 0.2;
 ambient.play();
 
-var points = [];
+var PROFILES = [];
+//var points = [];
+var meteorits = [];
 
 var PATH_MAX_LENGTH = 2400;
 var TRAPS_MAX_COUNT = 4;
 
-var graviTraps = [{"x": 500, "y": 500, size: 250}];
+var graviTraps = [/*{"x": 500, "y": 500, size: 250}*/];
 
 var routes = [
     [{"x": 107, "y": 61}, {"x": 189, "y": 71}, {"x": 265, "y": 92}, {"x": 356, "y": 100}, {
@@ -101,18 +103,16 @@ var finishArea = {
     radius: 180
 };
 
-var meteorits = [];
-
 app.ticker.add(function () {
-    if (Math.random() < 0.03) {
+    if (Math.random() < 0.3) {
         createMeteorite(meteoritsCont);
     }
 });
 
 function createMeteorite(parentContainer) {
     var meteorite = PIXI.Sprite.fromImage('img/meteorite.png'),
-        size = parseInt(Math.random() * 50 + 10),
-        x = 400 + parseInt(Math.random() * 1920),
+        size = parseInt(Math.random() * 30 + 10),
+        x = 800 + parseInt(Math.random() * 1920),
         y = -parseInt(Math.random() * 200),
         direction = PIXI.DEG_TO_RAD * 135,
         speed = Math.random() * 5 * (1-size/60) + 3;
@@ -127,6 +127,7 @@ function createMeteorite(parentContainer) {
         newY = meteorite.y + Math.sin(direction) * speed;
 
         meteorite.position.set(newX, newY);
+        meteorite.rotation += 0.01 * speed;
 
         if (newY > 1300) {
             meteorits = meteorits.filter(function (m) {
@@ -139,8 +140,8 @@ function createMeteorite(parentContainer) {
 
     app.ticker.add(update);
 
-    meteorite.height = size * 2;
-    meteorite.width = size * 2;
+    meteorite.height = size;
+    meteorite.width = size;
 
     meteorits.push(meteorite);
     parentContainer.addChild(meteorite);
@@ -203,7 +204,7 @@ function SkyFighter(name, parentContainer, route, traps) {
 
         if (calcDistance(container, finishArea) < finishArea.radius) {
             me.flying = false;
-            console.error("Winner", name, "!!!!!");
+            console.error("Winner", name);
         }
 
         if (calcDistance(container, me.nextPosition) < me.speed) {
@@ -216,23 +217,26 @@ function SkyFighter(name, parentContainer, route, traps) {
     this.makeStep = function () {
         var me = this,
             speed = me.isInGravitationTrap ? me.speed / (me.gravitationTrapCount + 1) : me.speed,
+            collision,
             newX, newY;
 
         newX = container.x + Math.cos(me.direction) * speed;
         newY = container.y + Math.sin(me.direction) * speed;
+        collision = checkCollision(rocket, newX, newY);
 
-        if (checkCollision(rocket, newX, newY)) {
-
+        if (collision.status) {
             me.shouldMove = false;
             if(me.shouldPlaySound){
-                explosionSoundClone.play();
+                explosionSound.play();
                 me.shouldPlaySound = false;
+                rocket.tint = 0xFF0000;
             }
 
             setTimeout(function () {
                 me.shouldMove = true;
                 me.shouldPlaySound = true;
-            }, 1000);
+                rocket.tint = 0xFFFFFF;
+            }, collision.meteoriteSize * 100);
         }
 
         if (me.shouldMove) {
@@ -243,11 +247,10 @@ function SkyFighter(name, parentContainer, route, traps) {
     };
 }
 
-
 function checkCollision(rocket, x, y) {
     var isCollision = false,
         combinedHalfWidths, combinedHalfHeights,
-        vx, vy;
+        vx, vy, size;
 
     meteorits.forEach(function (meteorite) {
         meteorite.halfWidth = meteorite.width / 2;
@@ -269,12 +272,13 @@ function checkCollision(rocket, x, y) {
         if (Math.abs(vx) < combinedHalfWidths) {
             if (Math.abs(vy) < combinedHalfHeights) {
                 isCollision = true;
+                size = meteorite.width;
             }
         }
 
     });
 
-    return isCollision;
+    return {status: isCollision, meteoriteSize: size};
 }
 
 function calcDirection(p1, p2) {
@@ -284,7 +288,6 @@ function calcDirection(p1, p2) {
 function calcDistance(p1, p2) {
     return Math.sqrt(Math.pow(p2.y - p1.y, 2) + Math.pow(p2.x - p1.x, 2));
 }
-
 
 function drawGraviTrap(x, y, size, parentContainer) {
     var blackhole = PIXI.Sprite.fromImage('img/blackhole-icon.png');
@@ -299,23 +302,10 @@ function drawGraviTrap(x, y, size, parentContainer) {
     blackhole.height = size * 2;
     blackhole.width = size * 2;
 
-
-    /* var gr = new PIXI.Graphics();
-
-     // Set the fill color
-     gr.beginFill(0xe74c3c); // Red
-
- // Draw a circle
-     gr.drawCircle(x, y, size); // drawCircle(x, y, radius)
-
- // Applies fill to lines and shapes since the last call to beginFill.
-     gr.endFill();*/
-
-    //var sprite = new PIXI.Sprite(gr.generateTexture(2));
     parentContainer.addChild(blackhole);
 }
 
-function drawRoute(routePoints, parentContainer) {
+/*function drawRoute(routePoints, parentContainer) {
     var gr = new PIXI.Graphics();
 
     gr.lineStyle(5, 0xFF0000);
@@ -362,9 +352,7 @@ function createGrid(parentContainer) {
 
 
     parentContainer.addChild(sprite);
-}
-
-var PROFILES = [];
+};*/
 
 document.getElementById("addPlayer").addEventListener("click", function () {
     var rawData = document.getElementById("playerData").value,
@@ -469,16 +457,6 @@ document.getElementById("startGame").addEventListener("click", function () {
 
 });
 
-var profile = {
-    name: "VVV",
-    path: [{"x": 86, "y": 58}, {"x": 1138, "y": 114}, {"x": 1211, "y": 804}, {"x": 1834, "y": 1115}],
-    traps: [{"x": 231, "y": 540, size: 150}, {"x": 842, "y": 373, size: 350}, {
-        "x": 849,
-        "y": 857,
-        size: 150
-    }, {"x": 1675, "y": 603, size: 250}]
-};
-
 function createCloud(i) {
     var cloud = PIXI.Sprite.fromImage('img/fog' + (i % 8) + '.png'),
         scale = Math.random() * (4 - 1) + 1,
@@ -508,5 +486,14 @@ for (var i = 0; i < 20; i++) {
     createCloud(i);
 }
 
+/*var profile = {
+    name: "VVV",
+    path: [{"x": 86, "y": 58}, {"x": 1138, "y": 114}, {"x": 1211, "y": 804}, {"x": 1834, "y": 1115}],
+    traps: [{"x": 231, "y": 540, size: 150}, {"x": 842, "y": 373, size: 350}, {
+        "x": 849,
+        "y": 857,
+        size: 150
+    }, {"x": 1675, "y": 603, size: 250}]
+};
 
-console.log(JSON.stringify(profile));
+console.log(JSON.stringify(profile));*/
