@@ -375,91 +375,98 @@ document.getElementById("addPlayer").addEventListener("click", function () {
 
 document.getElementById("startGame").addEventListener("click", function () {
 
-    var rockets = [],
-        rocket1,
-        rocket2,
-        rocket3,
-        rocket4,
-        rocket5,
-        rocket6;
+    function processResponse(response) {
+        PROFILES = response;
+
+        var rockets = [],
+            rocket1,
+            rocket2,
+            rocket3,
+            rocket4,
+            rocket5,
+            rocket6;
 
 
-    PROFILES.forEach(function (profile) {
-        if(!profile.traps || !(profile.traps instanceof Array) || profile.traps.length > TRAPS_MAX_COUNT){
-            console.error("CHEAT ATTEMPT", profile.name);
-            return;
-        }
-        graviTraps = graviTraps.concat(profile.traps);
-    });
-
-
-    function getLineLength(p1, p2) {
-        return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-    }
-
-
-    function getPathLength(path) {
-        var i,
-            resLength = 0,
-            prevPoint,
-            currPoint;
-
-        if (path.length < 2) {
-            return 0;
-        }
-
-
-        prevPoint = path[0];
-        for (i = 1; i < path.length; i++) {
-            currPoint = path[i];
-
-            resLength += getLineLength(prevPoint, currPoint);
-
-            prevPoint = currPoint;
-        }
-
-
-        return resLength;
-    }
-
-    function isValidPath(path){
-        return getPathLength(path) < PATH_MAX_LENGTH && (calcDistance(startArea, path[0]) < startArea.radius)
-    }
-
-
-    PROFILES.forEach(function (profile) {
-        if(!isValidPath(profile.path)){
-            console.error("CHEAT ATTEMPT", profile.name);
-            return;
-        }
-
-        rockets.push(new SkyFighter(profile.name, rocketsCont, profile.path, graviTraps));
-    });
-
-    graviTraps.forEach(function (graviTrap) {
-        drawGraviTrap(graviTrap.x, graviTrap.y, graviTrap.size, blackHolesCont);
-    });
-
-    rocket1 = new SkyFighter("Vova", rocketsCont, routes[0], graviTraps);
-    rocket2 = new SkyFighter("Vova1", rocketsCont, routes[1], graviTraps);
-    rocket3 = new SkyFighter("Vova2", rocketsCont, routes[2], graviTraps);
-    rocket4 = new SkyFighter("Vova3", rocketsCont, routes[3], graviTraps);
-    rocket5 = new SkyFighter("Vova4", rocketsCont, routes[4], graviTraps);
-    rocket6 = new SkyFighter("Kateryna", rocketsCont, routes[5], graviTraps);
-
-    rockets.push(rocket1);
-    rockets.push(rocket2);
-    rockets.push(rocket3);
-    rockets.push(rocket4);
-    rockets.push(rocket5);
-    rockets.push(rocket6);
-
-    app.ticker.add(function (delta) {
-
-        rockets.forEach(function (rocket) {
-            rocket.update();
+        PROFILES.forEach(function (profile) {
+            if(!profile.traps || !(profile.traps instanceof Array) || profile.traps.length > TRAPS_MAX_COUNT){
+                console.error("CHEAT ATTEMPT", profile.name);
+                return;
+            }
+            graviTraps = graviTraps.concat(profile.traps);
         });
-    });
+
+
+        function getLineLength(p1, p2) {
+            return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+        }
+
+
+        function getPathLength(path) {
+            var i,
+                resLength = 0,
+                prevPoint,
+                currPoint;
+
+            if (path.length < 2) {
+                return 0;
+            }
+
+
+            prevPoint = path[0];
+            for (i = 1; i < path.length; i++) {
+                currPoint = path[i];
+
+                resLength += getLineLength(prevPoint, currPoint);
+
+                prevPoint = currPoint;
+            }
+
+
+            return resLength;
+        }
+
+        function isValidPath(path){
+            return getPathLength(path) < PATH_MAX_LENGTH && (calcDistance(startArea, path[0]) < startArea.radius)
+        }
+
+
+        PROFILES.forEach(function (profile) {
+            if(!isValidPath(profile.path)){
+                console.error("CHEAT ATTEMPT", profile.name);
+                return;
+            }
+
+            rockets.push(new SkyFighter(profile.name, rocketsCont, profile.path, graviTraps));
+        });
+
+        graviTraps.forEach(function (graviTrap) {
+            drawGraviTrap(graviTrap.x, graviTrap.y, graviTrap.size, blackHolesCont);
+        });
+
+/*        rocket1 = new SkyFighter("Vova", rocketsCont, routes[0], graviTraps);
+        rocket2 = new SkyFighter("Vova1", rocketsCont, routes[1], graviTraps);
+        rocket3 = new SkyFighter("Vova2", rocketsCont, routes[2], graviTraps);
+        rocket4 = new SkyFighter("Vova3", rocketsCont, routes[3], graviTraps);
+        rocket5 = new SkyFighter("Vova4", rocketsCont, routes[4], graviTraps);
+        rocket6 = new SkyFighter("Kateryna", rocketsCont, routes[5], graviTraps);
+
+        rockets.push(rocket1);
+        rockets.push(rocket2);
+        rockets.push(rocket3);
+        rockets.push(rocket4);
+        rockets.push(rocket5);
+        rockets.push(rocket6);*/
+
+        app.ticker.add(function (delta) {
+
+            rockets.forEach(function (rocket) {
+                rocket.update();
+            });
+        });
+    }
+
+    serverManager.getAllPlayersConfig(processResponse);
+
 });
 
 var profile = {

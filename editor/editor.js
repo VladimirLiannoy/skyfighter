@@ -330,13 +330,15 @@ document.getElementById("export").addEventListener("click", function () {
         return;
     }
 
-    console.log(
-        JSON.stringify({
-            name: name,
-            path: generatedPath,
-            traps: generatedTraps
-        })
-    );
+    serverManager.sendPlayerConfig({
+        name: name,
+        path: generatedPath,
+        traps: generatedTraps
+    }, processResponse);
+
+    function processResponse (response) {
+        alert(response);
+    }
 });
 
 
@@ -371,8 +373,6 @@ app.view.addEventListener("mousemove", function (e) {
             break;
     }
 });
-
-
 
 app.view.addEventListener("mousedown", function (e) {
     var mX = e.offsetX,
