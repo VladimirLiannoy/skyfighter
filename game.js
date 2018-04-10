@@ -207,7 +207,10 @@ function SkyFighter(name, parentContainer, route, traps) {
             console.error("Winner", name);
         }
 
-        if (calcDistance(container, me.nextPosition) < me.speed) {
+
+
+
+        if (calcDistance(container, me.nextPosition) < me.speed && me.nextPositionIndex < route.length - 1) {
             me.nextPositionIndex++;
             me.nextPosition = route[me.nextPositionIndex];
         }

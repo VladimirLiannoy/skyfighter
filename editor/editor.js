@@ -297,7 +297,11 @@ document.getElementById("removePathPoint").addEventListener("click", removePathP
 
 window.addEventListener("keydown", function (e) {
     var code = e.keyCode;
-    console.error("eeee", code)
+    console.error("eeee", code);
+    if(document.activeElement === document.getElementById("playerName")){
+       return;
+    }
+
 
     switch (code){
         case 65: {
@@ -309,6 +313,9 @@ window.addEventListener("keydown", function (e) {
         }break;
 
         case 90: {
+            if(inputMode === IM_ADD_TRAP){
+                return;
+            }
             addTrap();
         }break;
 
@@ -327,6 +334,11 @@ document.getElementById("export").addEventListener("click", function () {
 
     if(name === null || name.length === 0){
         alert("Enter player name!");
+        return;
+    }
+
+    if(getLineLength(generatedPath[generatedPath.length - 1], finishArea) > finishArea.radius){
+        alert("You need to reach red planet!");
         return;
     }
 

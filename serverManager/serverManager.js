@@ -1,3 +1,5 @@
+var ip = "10.96.18.48";
+
 var serverManager = {
     httpPostJSON: function (url, json) {
 
@@ -53,7 +55,7 @@ var serverManager = {
 
 },
     sendPlayerConfig: function (json, callBack) {
-        this.httpPostJSON("http://192.168.2.103:8089/", json)
+        this.httpPostJSON("http://" + ip + ":8089/", json)
             .then(
                 response => callBack(response),
                 error => alert(`Rejected: ${error}`)
@@ -61,7 +63,7 @@ var serverManager = {
     },
 
     getAllPlayersConfig: function (callBack) {
-        this.httpGet("http://192.168.2.103:8089?needFullConfig=true")
+        this.httpGet("http://" + ip + ":8089?needFullConfig=true")
             .then(
                 response => callBack(JSON.parse(response)),
                 error => alert(`Rejected: ${error}`)
