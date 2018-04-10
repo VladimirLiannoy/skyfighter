@@ -295,9 +295,9 @@ document.getElementById("removePathPoint").addEventListener("click", removePathP
 
 
 
-window.addEventListener("keydown", function (e) {
+/*window.addEventListener("keydown", function (e) {
     var code = e.keyCode;
-    console.error("eeee", code)
+    //console.error("eeee", code)
 
     switch (code){
         case 65: {
@@ -317,7 +317,7 @@ window.addEventListener("keydown", function (e) {
         }break;
 
     }
-});
+});*/
 
 
 

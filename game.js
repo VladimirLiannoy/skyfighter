@@ -23,73 +23,12 @@ ambient.play();
 var PROFILES = [];
 //var points = [];
 var meteorits = [];
+var rockets = [];
 
 var PATH_MAX_LENGTH = 2400;
 var TRAPS_MAX_COUNT = 4;
 
 var graviTraps = [/*{"x": 500, "y": 500, size: 250}*/];
-
-var routes = [
-    [{"x": 107, "y": 61}, {"x": 189, "y": 71}, {"x": 265, "y": 92}, {"x": 356, "y": 100}, {
-        "x": 470,
-        "y": 81
-    }, {"x": 558, "y": 66}, {"x": 705, "y": 98}, {"x": 831, "y": 137}, {"x": 957, "y": 195}, {
-        "x": 1030,
-        "y": 268
-    }, {"x": 1075, "y": 309}, {"x": 1192, "y": 345}, {"x": 1289, "y": 387}, {"x": 1380, "y": 462}, {
-        "x": 1424,
-        "y": 543
-    }, {"x": 1513, "y": 662}, {"x": 1593, "y": 736}, {"x": 1678, "y": 860}, {"x": 1725, "y": 939}, {
-        "x": 1818,
-        "y": 1065
-    }],
-    [{"x": 108, "y": 71}, {"x": 178, "y": 97}, {"x": 291, "y": 117}, {"x": 392, "y": 118}, {
-        "x": 542,
-        "y": 105
-    }, {"x": 667, "y": 121}, {"x": 759, "y": 152}, {"x": 866, "y": 192}, {"x": 959, "y": 239}, {
-        "x": 1045,
-        "y": 386
-    }, {"x": 1147, "y": 534}, {"x": 1161, "y": 638}, {"x": 1162, "y": 773}, {"x": 1210, "y": 851}, {
-        "x": 1291,
-        "y": 922
-    }, {"x": 1369, "y": 1006}, {"x": 1548, "y": 1099}, {"x": 1679, "y": 1143}, {"x": 1802, "y": 1134}],
-    [{"x": 107, "y": 79}, {"x": 218, "y": 135}, {"x": 305, "y": 192}, {"x": 361, "y": 288}, {
-        "x": 438,
-        "y": 380
-    }, {"x": 501, "y": 485}, {"x": 690, "y": 559}, {"x": 792, "y": 658}, {"x": 857, "y": 712}, {
-        "x": 1030,
-        "y": 768
-    }, {"x": 1163, "y": 807}, {"x": 1398, "y": 789}, {"x": 1535, "y": 784}, {"x": 1589, "y": 796}, {
-        "x": 1662,
-        "y": 881
-    }, {"x": 1721, "y": 988}, {"x": 1799, "y": 1075}],
-    [{"x": 105, "y": 92}, {"x": 272, "y": 181}, {"x": 343, "y": 275}, {"x": 490, "y": 493}, {
-        "x": 647,
-        "y": 571
-    }, {"x": 767, "y": 883}, {"x": 1029, "y": 1001}, {"x": 1237, "y": 1110}, {"x": 1450, "y": 1107}, {
-        "x": 1667,
-        "y": 1163
-    }, {"x": 1779, "y": 1148}],
-    [{"x": 101, "y": 86}, {"x": 309, "y": 394}, {"x": 347, "y": 528}, {"x": 358, "y": 674}, {
-        "x": 416,
-        "y": 761
-    }, {"x": 688, "y": 910}, {"x": 881, "y": 969}, {"x": 1063, "y": 951}, {"x": 1132, "y": 964}, {
-        "x": 1231,
-        "y": 968
-    }, {"x": 1370, "y": 1035}, {"x": 1469, "y": 1091}, {"x": 1660, "y": 1088}, {"x": 1773, "y": 1088}],
-    [{"x": 84, "y": 86}, {"x": 227, "y": 320}, {"x": 312, "y": 540}, {"x": 340, "y": 707}, {
-        "x": 435,
-        "y": 801
-    }, {"x": 550, "y": 874}, {"x": 714, "y": 958}, {"x": 888, "y": 999}, {"x": 1019, "y": 1071}, {
-        "x": 1155,
-        "y": 1137
-    }, {"x": 1272, "y": 1152}, {"x": 1385, "y": 1150}, {"x": 1501, "y": 1143}, {"x": 1610, "y": 1164}, {
-        "x": 1686,
-        "y": 1188
-    }, {"x": 1784, "y": 1172}]
-
-];
-
 
 var startArea = {
     x: 50,
@@ -220,9 +159,15 @@ function SkyFighter(name, parentContainer, route, traps) {
             collision,
             newX, newY;
 
+
+
         newX = container.x + Math.cos(me.direction) * speed;
         newY = container.y + Math.sin(me.direction) * speed;
         collision = checkCollision(rocket, newX, newY);
+
+        if(checkRocketOverlap(rocket, newX, newY)){
+            rocket.position.x += 10;
+        }
 
         if (collision.status) {
             me.shouldMove = false;
@@ -279,6 +224,39 @@ function checkCollision(rocket, x, y) {
     });
 
     return {status: isCollision, meteoriteSize: size};
+}
+
+function checkRocketOverlap(rocket, x, y) {
+    var isCollision = false,
+        combinedHalfWidths, combinedHalfHeights,
+        vx, vy;
+
+    rockets.forEach(function (rocket2) {
+        rocket2.halfWidth = rocket2.width / 2;
+        rocket2.halfHeight = rocket2.height / 2;
+        rocket.halfWidth = rocket.width / 2;
+        rocket.halfHeight = rocket.height / 2;
+
+        rocket2.CenterX = rocket2.x + rocket2.halfWidth;
+        rocket.CenterX = x + rocket.halfWidth;
+        rocket2.CenterY = rocket2.y + rocket2.halfHeight;
+        rocket.CenterY = y + rocket.halfHeight;
+
+        vx = rocket2.CenterX - rocket.CenterX;
+        vy = rocket2.CenterY - rocket.CenterY;
+
+        combinedHalfWidths = rocket2.halfWidth + rocket.halfWidth;
+        combinedHalfHeights = rocket2.halfHeight + rocket.halfHeight;
+
+        if (Math.abs(vx) < combinedHalfWidths) {
+            if (Math.abs(vy) < combinedHalfHeights) {
+                isCollision = true;
+            }
+        }
+
+    });
+
+    return isCollision;
 }
 
 function calcDirection(p1, p2) {
@@ -352,7 +330,7 @@ function createGrid(parentContainer) {
 
 
     parentContainer.addChild(sprite);
-};*/
+};
 
 document.getElementById("addPlayer").addEventListener("click", function () {
     var rawData = document.getElementById("playerData").value,
@@ -360,19 +338,20 @@ document.getElementById("addPlayer").addEventListener("click", function () {
 
     PROFILES.push(data);
 });
+*/
 
 document.getElementById("startGame").addEventListener("click", function () {
 
     function processResponse(response) {
         PROFILES = response;
 
-        var rockets = [],
-            rocket1,
-            rocket2,
-            rocket3,
-            rocket4,
-            rocket5,
-            rocket6;
+        /*        var rockets = [],
+                    rocket1,
+                    rocket2,
+                    rocket3,
+                    rocket4,
+                    rocket5,
+                    rocket6;*/
 
 
         PROFILES.forEach(function (profile) {
@@ -431,19 +410,19 @@ document.getElementById("startGame").addEventListener("click", function () {
             drawGraviTrap(graviTrap.x, graviTrap.y, graviTrap.size, blackHolesCont);
         });
 
-/*        rocket1 = new SkyFighter("Vova", rocketsCont, routes[0], graviTraps);
-        rocket2 = new SkyFighter("Vova1", rocketsCont, routes[1], graviTraps);
-        rocket3 = new SkyFighter("Vova2", rocketsCont, routes[2], graviTraps);
-        rocket4 = new SkyFighter("Vova3", rocketsCont, routes[3], graviTraps);
-        rocket5 = new SkyFighter("Vova4", rocketsCont, routes[4], graviTraps);
-        rocket6 = new SkyFighter("Kateryna", rocketsCont, routes[5], graviTraps);
+        /*        rocket1 = new SkyFighter("Vova", rocketsCont, routes[0], graviTraps);
+                rocket2 = new SkyFighter("Vova1", rocketsCont, routes[1], graviTraps);
+                rocket3 = new SkyFighter("Vova2", rocketsCont, routes[2], graviTraps);
+                rocket4 = new SkyFighter("Vova3", rocketsCont, routes[3], graviTraps);
+                rocket5 = new SkyFighter("Vova4", rocketsCont, routes[4], graviTraps);
+                rocket6 = new SkyFighter("Kateryna", rocketsCont, routes[5], graviTraps);
 
-        rockets.push(rocket1);
-        rockets.push(rocket2);
-        rockets.push(rocket3);
-        rockets.push(rocket4);
-        rockets.push(rocket5);
-        rockets.push(rocket6);*/
+                rockets.push(rocket1);
+                rockets.push(rocket2);
+                rockets.push(rocket3);
+                rockets.push(rocket4);
+                rockets.push(rocket5);
+                rockets.push(rocket6);*/
 
         app.ticker.add(function (delta) {
 
@@ -453,7 +432,13 @@ document.getElementById("startGame").addEventListener("click", function () {
         });
     }
 
-    serverManager.getAllPlayersConfig(processResponse);
+
+    var pass = prompt("PASSWORD: ", "");
+    if(pass === "letTheBattleBegin"){
+        serverManager.getAllPlayersConfig(processResponse);
+    } else {
+        alert("WRONG!");
+    }
 
 });
 
